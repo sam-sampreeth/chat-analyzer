@@ -12,13 +12,10 @@ from utils.visualization import show_visuals
 os.environ["STREAMLIT_WATCH_USE_POLLING"] = "true"
 
 # Set page config
-st.set_page_config(page_title="WhatsApp Chat Analyzer", layout="wide")
+st.set_page_config(page_title="WhatsApp Chat Analyzer", layout="centered")
 st.header("📊 WhatsApp Chat Analyzer")
 
-st.markdown("""
-Uncover the hidden patterns in your WhatsApp chats.  
-Analyze message frequency, word count, emoji usage, and more with this AI-powered tool.
-""")
+st.subheader("Uncover the hidden patterns in your WhatsApp chats. Analyze message frequency, word count, emoji usage, and more with this analysis tool.")
 
 # Initialize session state
 if "chats_data" not in st.session_state:
@@ -27,17 +24,19 @@ if "parsed" not in st.session_state:
     st.session_state.parsed = False
 
 # File uploader
-input_file = st.file_uploader("📤 Upload WhatsApp Chat (.txt or .zip)", type=["txt", "zip"])
+st.info("ℹ️ Upload WhatsApp Chat export (.txt or .zip)")
+input_file = st.file_uploader("📤 Upload your file", type=["txt", "zip"])
 
 if input_file:
     # Show file details
-    with st.expander("📂 File Details", expanded=False):
+    with st.expander("View file details", expanded=False):
         st.write(f"**Filename:** {input_file.name}")
         st.write(f"**Size:** {round(input_file.size / 1024, 2)} KB")
 
     # Confirm and parse file
-    if st.button("✅ Confirm and Parse File"):
-        chats_data = parse_input_file(input_file)
+    if st.button("✅ Confirm and Parse File", type="primary"):
+        with st.spinner("Parsing chat file... Please wait..."):
+            chats_data = parse_input_file(input_file)
 
         if chats_data.empty:
             st.error("❌ Could not parse the chat. File might be invalid or unsupported.")
@@ -67,6 +66,7 @@ if st.session_state.parsed and st.session_state.chats_data is not None:
 
     # Chat preview
     st.subheader("🔍 Chat Preview")
+    st.write("Have a look at the first 5 parsed messages:")
     st.dataframe(filtered_data.head(5), use_container_width=True)
 
     # User selection
@@ -77,14 +77,10 @@ if st.session_state.parsed and st.session_state.chats_data is not None:
     final_df = filtered_data[filtered_data['sender'].isin(selected_users)]
 
     # Run analysis
-    if st.button("📊 Run Analysis"):
+    if st.button("Run Analysis"):
         if final_df.empty:
             st.warning("⚠️ No data found for the selected filters.")
         else:
             show_visuals(final_df)
 
-# Optional reset button
-if st.button("🔁 Reset App"):
-    st.session_state.chats_data = None
-    st.session_state.parsed = False
-    st.experimental_rerun()
+
