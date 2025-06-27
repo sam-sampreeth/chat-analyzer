@@ -34,7 +34,7 @@ if input_file:
         st.write(f"**Size:** {round(input_file.size / 1024, 2)} KB")
 
     # Confirm and parse file
-    if st.button("✅ Confirm and Parse File", type="primary"):
+    if st.button("Confirm and Parse File", type="primary"):
         with st.spinner("Parsing chat file... Please wait..."):
             chats_data = parse_input_file(input_file)
 
@@ -55,7 +55,7 @@ if st.session_state.parsed and st.session_state.chats_data is not None:
     min_date = chats_data["datetime"].min().date()
     max_date = chats_data["datetime"].max().date()
     date_range = st.date_input(
-        "📅 Select date range for analysis",
+        "📅 Select date range for analysis (YYYY/MM/DD)",
         (min_date, max_date),
         min_value=min_date,
         max_value=max_date
